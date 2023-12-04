@@ -42,6 +42,19 @@ app.get("/getPickupCabinets",(req,res)=>{
   })
 })
 
+app.get("/getUndeliveredParcels",(req,res)=>{
+  const {locker}=req.query;
+
+  db.query("select * from parcels where status='undelivered' and pickuplocation=?",[locker],(err,result)=>{
+      if(err){
+          console.log(err);
+      }else{
+          res.send(result);
+          console.log('get undelivered parcels');
+      }
+  })
+})
+
 app.put("/updateforpickup",(req,res)=>{
   const pickupcabinetNumber=req.body.pickupcabinetNumber
   db.query(
@@ -58,19 +71,26 @@ app.put("/updateforpickup",(req,res)=>{
   )
 })
 
-
-app.get("/getUndeliveredParcels",(req,res)=>{
-  const {locker}=req.query;
-
-  db.query("select * from parcels where status='undelivered' and pickuplocation=?",[locker],(err,result)=>{
-      if(err){
-          console.log(err);
-      }else{
-          res.send(result);
-          console.log('get undelivered parcels');
+app.put("/updatefordelivery",(req,res)=>{
+  const freecabinetNumber=req.body.freecabinetNumber
+  const parcelid=req.body.parcelid;
+  db.query(
+    "update cabinets as c join parcels as p on c.location=p.pickuplocation set c.cabinetstatus= 'topickup', p.status='topickup' ,c.code=p.reservationcode ,p.iscodevalid=true where c.number=?",[freecabinetNumber,parcelid],
+    (err,result)=>{
+      if (err) {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+      } else {
+        res.send(`Cabinet ${freecabinetNumber} status changed,`);
+        console.log(`Cabinet ${freecabinetNumber} status changed,parcel${parcelid} status changed`)
       }
-  })
+    }
+  )
 })
+
+
+
+
 
 
 

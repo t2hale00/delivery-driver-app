@@ -77,6 +77,20 @@ function App() {
 
   }
 
+  const handlePutParcelIn=(freecabinetnumber)=>{
+    const parcelid=selectedParcel;
+    Axios.put("http://localhost:3003/updatefordelivery",{
+      freecabinetNumber:freecabinetnumber,parcelid:parcelid}).then(
+        (response)=>{
+          setButtonClicked(true);
+          setMessage(`parcel ${parcelid} is put in cabinet${freecabinetnumber}`)
+        }
+      ).catch((err)=>{
+        console.log("error fetching updatefor delivery:",err)
+      })
+    
+  }
+
 
 
 
@@ -158,7 +172,10 @@ function App() {
                   <div key={freecabinet.cabinetid} className="Box">
                     <p>number:{freecabinet.number}</p>
                     <p>status:{freecabinet.cabinetstatus}</p>
-                    {selectedParcel&&<button className="selectfreecabinetbutton  smallbutton">
+                    {selectedParcel&&<button className="selectfreecabinetbutton  smallbutton"
+                    onClick={()=>{
+                      handlePutParcelIn(freecabinet.number)
+                      }}>
                       put parcel in
                     </button>}
                   </div>
@@ -188,9 +205,7 @@ function App() {
                   <div key={undeliveredparcel.parcelid} className="Box">
                     <p>parcelid:{undeliveredparcel.parcelid}</p>
                     <p>status:{undeliveredparcel.status}</p>
-                    <p>
-                      recipient address:{undeliveredparcel.recipientaddress}
-                    </p>
+                   
                     <p>pickuplocation:{undeliveredparcel.pickuplocation}</p>
                     <button className="smallbutton"
                      onClick={() => {
