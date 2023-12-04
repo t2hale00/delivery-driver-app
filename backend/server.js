@@ -45,7 +45,7 @@ app.get("/getPickupCabinets",(req,res)=>{
 app.put("/updateforpickup",(req,res)=>{
   const pickupcabinetNumber=req.body.pickupcabinetNumber
   db.query(
-    "update cabinets as c set c.cabinetstatus= 'available' where c.number=?",[pickupcabinetNumber],
+    "update cabinets as c join parcels as p on c.code=p.reservationcode set c.cabinetstatus= 'available', p.status='undelivered' where c.number=?",[pickupcabinetNumber],
     (err,result)=>{
       if (err) {
         console.error(err);

@@ -61,7 +61,7 @@ function App() {
         console.log("cabinet status changes to availeble");
         setMessage(
           `parcel in cabinet${pickupcabinetNumber} is picked,
-          refresh page to check`
+         cabinet${pickupcabinetNumber} is free now`
         );
       })
       .catch((err) => {
@@ -72,7 +72,7 @@ function App() {
   const handleSelectedParcel=(parcelid)=>{
 
     setSelectParcel(parcelid)
-    setMessage(`parcel ${parcelid} is selected,select a free cabinet now`);
+    setMessage(`parcel ${parcelid} is selected,`);
     setButtonClicked(true);
 
   }
@@ -102,8 +102,8 @@ function App() {
         </select>
         {selectedLocker && <p>You selected:{selectedLocker}</p>}
       </div>
-
-      <p> {message}</p>
+      <p>{message}</p>
+      
 
       {/* get pickupcabinets */}
       <div>
@@ -122,14 +122,14 @@ function App() {
             {pickupCabinets.map((pickupcabinet) => (
               <div key={pickupcabinet.cabinetid} className="Box">
                 <p>number:{pickupcabinet.number}</p>
-                <p>status:{pickupcabinet.cabinetstatus}</p>
+                <p>status:{pickupcabinet.cabinetstatus} </p>
                 <button
                   className="smallbutton"
                   onClick={() => {
                     handlePickupCabinets(pickupcabinet.number);
                   }}
                 >
-                  pick up
+                  pick up the parcel
                 </button>
               </div>
             ))}
@@ -151,6 +151,7 @@ function App() {
                 show/hide free cabinet
               </button>
             )}
+        
             {showfreecabinets && (
               <div>
                 {freeCabinets.map((freecabinet) => (
