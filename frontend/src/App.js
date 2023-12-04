@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Axios from "axios";
 
 function App() {
-  const [selectedLocker, setSelectedLocker] = useState("");
+  const [selectedLocker, setSelectedLocker] = useState(false);
   const [message, setMessage] = useState("");
   const [freeCabinets, setFreeCabinets] = useState([]);
   const [pickupCabinets, setPickupCabinets] = useState([]);
@@ -16,6 +16,8 @@ function App() {
     const lockerValue = event.target.value;
     setSelectedLocker(lockerValue);
     setMessage("");
+
+    //getFreeCabinets
     Axios.get("http://localhost:3003/getFreeCabinets", {
       params: { locker: lockerValue },
     })
@@ -26,6 +28,7 @@ function App() {
         console.log("erro fetching freecabinets");
       });
 
+      //getPickupCabinets
     Axios.get("http://localhost:3003/getPickupCabinets", {
       params: { locker: lockerValue },
     })
@@ -36,10 +39,11 @@ function App() {
         console.log("erro fetching pickupcabinets");
       });
 
-
+      //getUndeliveredParcels
       Axios.get("http://localhost:3003/getUndeliveredParcels",{
-
+        params: { locker: lockerValue },
       }).then((response)=>{
+        
         setUndeliveredParcels(response.data)
       }).catch((err)=>{
         console.log(err);
@@ -160,7 +164,6 @@ function App() {
          
           {selectedLocker && (
             <button
-            
               onClick={() => {
                 setShowUndeliveredParcels(!showundeliveredparcels);
               }}
@@ -168,12 +171,13 @@ function App() {
               show/hide undelivered parcels
             </button>
           )}
-            {showundeliveredparcels && (
+            {showundeliveredparcels && selectedLocker&& (
             <div>
               {undeliveredParcels.map((undeliveredparcel) => (
                 <div key={undeliveredparcel.parcelid} className="Box">
                   <p>parcelid:{undeliveredparcel.parcelid}</p>
                   <p>status:{undeliveredparcel.status}</p>
+                  <p>recipient address:{undeliveredparcel.recipientaddress}</p>
                 </div>
               ))}
             </div>
