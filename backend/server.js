@@ -60,9 +60,9 @@ app.put("/updateforpickup",(req,res)=>{
 
 
 app.get("/getUndeliveredParcels",(req,res)=>{
-  
+  const {locker}=req.query;
 
-  db.query("select * from parcels where status='undelivered' ",(err,result)=>{
+  db.query("select * from parcels where status='undelivered' and pickuplocation=?",[locker],(err,result)=>{
       if(err){
           console.log(err);
       }else{

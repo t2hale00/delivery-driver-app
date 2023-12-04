@@ -81,11 +81,12 @@ button:hover {
 }
 
 
-.pickupbutton {
+.smallbutton {
   padding: 10px 20px;
   font-size: 22px;
   font-weight: bold;
-  color: #333
+  color: #4CAF50
+
 }
 
 .container {
