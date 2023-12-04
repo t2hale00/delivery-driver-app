@@ -66,7 +66,7 @@ button {
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  border: 2px solid #4CAF50; /* Increase border thickness for a subtle look */
+  border: 2px solid #3a76b5; /* Increase border thickness for a subtle look */
   border-radius: 5px;
   color: #333; /* Darker text color for better contrast */
   background-color: #fff;
@@ -75,9 +75,9 @@ button {
 
 /* Hover Effect */
 button:hover {
-  background-color: #4CAF50;
+  background-color: #3a76b5;
   color: white;
-  border-color: #4CAF50; /* Adjust border color on hover */
+  border-color: #3a76b5; /* Adjust border color on hover */
 }
 
 
@@ -85,7 +85,7 @@ button:hover {
   padding: 10px 20px;
   font-size: 22px;
   font-weight: bold;
-  color: #4CAF50
+  color: #3a76b5
 
 }
 

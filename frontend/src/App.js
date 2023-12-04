@@ -11,6 +11,8 @@ function App() {
   const [showPickupCabinets, setShowPickupCabinets] = useState(false);
   const [showundeliveredparcels, setShowUndeliveredParcels] = useState(false);
   const [undeliveredParcels, setUndeliveredParcels] = useState([]);
+  const[selectedParcel,setSelectParcel]=useState('');
+  const [buttonClicked, setButtonClicked] = useState(false);
 
   const handleLockerSelect = (event) => {
     const lockerValue = event.target.value;
@@ -66,6 +68,17 @@ function App() {
         console.error("error updating cabinet status:", err);
       });
   };
+
+  const handleSelectedParcel=(parcelid)=>{
+
+    setSelectParcel(parcelid)
+    setMessage(`parcel ${parcelid} is selected,select a free cabinet now`);
+    setButtonClicked(true);
+
+  }
+
+
+
 
   return (
     <div className="App">
@@ -144,9 +157,9 @@ function App() {
                   <div key={freecabinet.cabinetid} className="Box">
                     <p>number:{freecabinet.number}</p>
                     <p>status:{freecabinet.cabinetstatus}</p>
-                    <button className="selectfreecabinetbutton  smallbutton">
+                    {selectedParcel&&<button className="selectfreecabinetbutton  smallbutton">
                       put parcel in
-                    </button>
+                    </button>}
                   </div>
                 ))}
               </div>
@@ -166,10 +179,10 @@ function App() {
             )}
             {showundeliveredparcels && selectedLocker && (
               <div>
-                <h2 style={{color:'red'}}>delivery step:<br/>
+                {!selectedParcel?<h2 style={{color:'red'}}>delivery step:<br/>
                 1. select one parcel <br/>
                 2.select a freecabinet to put in 
-                </h2>
+                </h2> : <h2 style={{color:'red'}}>{message}</h2>}
                 {undeliveredParcels.map((undeliveredparcel) => (
                   <div key={undeliveredparcel.parcelid} className="Box">
                     <p>parcelid:{undeliveredparcel.parcelid}</p>
@@ -178,8 +191,20 @@ function App() {
                       recipient address:{undeliveredparcel.recipientaddress}
                     </p>
                     <p>pickuplocation:{undeliveredparcel.pickuplocation}</p>
-                    <button className="smallbutton">
-                     select it
+                    <button className="smallbutton"
+                     onClick={() => {
+                      if (!buttonClicked) {
+                        handleSelectedParcel(undeliveredparcel.parcelid);
+                      }
+                    }}
+                    disabled={buttonClicked}
+                    style={{
+                      backgroundColor: buttonClicked ? '#a0c4ff' : '#fff', // Light blue when disabled
+                      color: buttonClicked ? '#fff' : '#3a76b5', // White text when disabled
+                      border: buttonClicked ? '2px solid #a0c4ff' : '2px solid #3a76b5', // Light blue border when disabled
+                    }}
+                  >
+                    {buttonClicked ? 'Selected' : 'Select it'}
                     </button>
                   </div>
                 ))}
