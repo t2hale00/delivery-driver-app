@@ -24,10 +24,40 @@ app.get("/getFreeCabinets",(req,res)=>{
             console.log(err);
         }else{
             res.send(result);
-            console.log(result);
+            console.log('get available cabinets');
         }
     })
 })
+
+app.get("/getPickupCabinets",(req,res)=>{
+  const {locker}=req.query;
+
+  db.query("select * from cabinets where cabinetstatus='todelivery' and location =?",[locker],(err,result)=>{
+      if(err){
+          console.log(err);
+      }else{
+          res.send(result);
+          console.log('get pickup cabinets');
+      }
+  })
+})
+
+app.put("/updateforpickup",(req,res)=>{
+  const pickupcabinetNumber=req.body.pickupcabinetNumber
+  db.query(
+    "update cabinets as c set c.cabinetstatus= 'available' where c.number=?",[pickupcabinetNumber],
+    (err,result)=>{
+      if (err) {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+      } else {
+        res.send(`Cabinet ${pickupcabinetNumber} status changed`);
+        console.log(`Cabinet ${pickupcabinetNumber} status changed`)
+      }
+    }
+  )
+})
+
 
 
 
