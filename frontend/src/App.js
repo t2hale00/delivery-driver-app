@@ -2,7 +2,6 @@ import "./App.css";
 import React, { useState } from "react";
 import Axios from "axios";
 
-
 function App() {
   const [selectedLocker, setSelectedLocker] = useState("");
   const [message, setMessage] = useState("");
@@ -10,6 +9,8 @@ function App() {
   const [pickupCabinets, setPickupCabinets] = useState([]);
   const [showfreecabinets, setShowFreeCabinets] = useState(false);
   const [showPickupCabinets, setShowPickupCabinets] = useState(false);
+  const [showundeliveredparcels, setShowUndeliveredParcels] = useState(false);
+  const [undeliveredParcels, setUndeliveredParcels] = useState([]);
 
   const handleLockerSelect = (event) => {
     const lockerValue = event.target.value;
@@ -34,6 +35,15 @@ function App() {
       .catch((err) => {
         console.log("erro fetching pickupcabinets");
       });
+
+
+      Axios.get("http://localhost:3003/getUndeliveredParcels",{
+
+      }).then((response)=>{
+        setUndeliveredParcels(response.data)
+      }).catch((err)=>{
+        console.log(err);
+      })
   };
 
   const handlePickupCabinets = (pickupcabinetNumber) => {
@@ -51,6 +61,9 @@ function App() {
         console.error("error updating cabinet status:", err);
       });
   };
+
+
+
 
   return (
     <div className="App">
@@ -73,15 +86,18 @@ function App() {
           <option value="Locker5">Locker5</option>
         </select>
         {selectedLocker && (
-          <p className="LockerSelect">You selected:{selectedLocker}</p>
+          <p >You selected:{selectedLocker}</p>
         )}
       </div>
-     <p> {message}</p>
+
+      <p> {message}</p>
+
+      {/* get pickupcabinets */}
       <div>
-        {/* get pickupcabinets */}
+      
         {selectedLocker && (
           <button
-            className="showpickupcabinet"
+          
             onClick={() => {
               setShowPickupCabinets(!showPickupCabinets);
             }}
@@ -89,14 +105,14 @@ function App() {
             show/hide pickup cabinet
           </button>
         )}
-       
+
         {showPickupCabinets && (
           <div>
             {pickupCabinets.map((pickupcabinet) => (
               <div key={pickupcabinet.cabinetid} className="Box">
                 <p>number:{pickupcabinet.number}</p>
                 <p>status:{pickupcabinet.cabinetstatus}</p>
-                <button
+                <button className="pickupbutton"
                   onClick={() => {
                     handlePickupCabinets(pickupcabinet.number);
                   }}
@@ -108,28 +124,64 @@ function App() {
           </div>
         )}
       </div>
-      <div>
-        {/* get free cabinets */}
-        {selectedLocker && (
-          <button
-            className="showfreecabinet"
-            onClick={() => {
-              setShowFreeCabinets(!showfreecabinets);
-            }}
-          >
-            show/hide free cabinet
-          </button>
-        )}
-        {showfreecabinets && (
-          <div>
-            {freeCabinets.map((freecabinet) => (
-              <div key={freecabinet.cabinetid} className="Box">
-                <p>number:{freecabinet.number}</p>
-                <p>status:{freecabinet.cabinetstatus}</p>
-              </div>
-            ))}
-          </div>
-        )}
+
+
+
+      {/* Big div for get free cabinets and undelivered parcels*/}
+     <div className="pageContainer"> 
+      <div className="container">
+
+        {/* one div for get free cabinets*/}
+<div className="leftbox">
+   {selectedLocker && (
+            <button
+          
+              onClick={() => {
+                setShowFreeCabinets(!showfreecabinets);
+              }}
+            >
+              show/hide free cabinet
+            </button>
+          )}
+          {showfreecabinets && (
+            <div>
+              {freeCabinets.map((freecabinet) => (
+                <div key={freecabinet.cabinetid} className="Box">
+                  <p>number:{freecabinet.number}</p>
+                  <p>status:{freecabinet.cabinetstatus}</p>
+                </div>
+              ))}
+            </div>
+          )}
+</div>
+
+        {/* one div for show undelivered parcels*/}
+        <div className="rightbox">
+         
+          {selectedLocker && (
+            <button
+            
+              onClick={() => {
+                setShowUndeliveredParcels(!showundeliveredparcels);
+              }}
+            >
+              show/hide undelivered parcels
+            </button>
+          )}
+            {showundeliveredparcels && (
+            <div>
+              {undeliveredParcels.map((undeliveredparcel) => (
+                <div key={undeliveredparcel.parcelid} className="Box">
+                  <p>parcelid:{undeliveredparcel.parcelid}</p>
+                  <p>status:{undeliveredparcel.status}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+        </div>
+        
+      </div>
       </div>
     </div>
   );

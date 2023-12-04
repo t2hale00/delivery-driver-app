@@ -59,6 +59,19 @@ app.put("/updateforpickup",(req,res)=>{
 })
 
 
+app.get("/getUndeliveredParcels",(req,res)=>{
+  
+
+  db.query("select * from parcels where status='undelivered' ",(err,result)=>{
+      if(err){
+          console.log(err);
+      }else{
+          res.send(result);
+          console.log('get undelivered parcels');
+      }
+  })
+})
+
 
 
 
