@@ -1,3 +1,4 @@
+// App.js
 import "./App.css";
 import React, { useState } from "react";
 import Axios from "axios";
@@ -11,17 +12,18 @@ function App() {
   const [message, setMessage] = useState("");
   const [freeCabinets, setFreeCabinets] = useState([]);
   const [pickupCabinets, setPickupCabinets] = useState([]);
-
   const [undeliveredParcels, setUndeliveredParcels] = useState([]);
   const [selectedParcel, setSelectedParcel] = useState("");
   const [buttonClicked, setButtonClicked] = useState(false);
+const[notification,setNotification]=useState('')
+const[selectedParcelUserId,setselectedParcelUserId]=useState('');
 
   const handleLockerSelect = (event) => {
     const lockerValue = event.target.value;
     setSelectedLocker(lockerValue);
     setMessage("");
-
-    //getFreeCabinets
+  
+//getFreeCabinets
     Axios.get("http://localhost:3003/getFreeCabinets", {
       params: { locker: lockerValue },
     })
@@ -31,7 +33,7 @@ function App() {
       .catch((err) => {
         console.log("error fetching free cabinets");
       });
-    //getPickupCabinets
+ //getPickupCabinets
     Axios.get("http://localhost:3003/getPickupCabinets", {
       params: { locker: lockerValue },
     })
@@ -41,7 +43,7 @@ function App() {
       .catch((err) => {
         console.log("error fetching pickup cabinets");
       });
-    //getUndeliveredParcels
+  //getUndeliveredParcels
     Axios.get("http://localhost:3003/getUndeliveredParcels", {
       params: { locker: lockerValue },
     })
@@ -76,17 +78,20 @@ function App() {
       });
   };
 
-  const handleSelectedParcel = (parcelid) => {
+  const handleSelectedParcel = (parcelid,userid) => {
     setSelectedParcel(parcelid);
     setMessage(`parcel ${parcelid} is selected,`);
     setButtonClicked(true);
+   setselectedParcelUserId(userid)
   };
 
   const handlePutParcelIn = (freecabinetnumber) => {
     const parcelid = selectedParcel;
+ const userId=selectedParcelUserId
     Axios.put("http://localhost:3003/updatefordelivery", {
       freecabinetNumber: freecabinetnumber,
       parcelid: parcelid,
+      userid:userId
     })
       .then((response) => {
         setButtonClicked(true);
@@ -119,14 +124,17 @@ function App() {
       <p>{message}</p>
 
       <PickupCabinets
+       
         pickupCabinets={pickupCabinets}
         handlePickupCabinets={handlePickupCabinets}
         selectedLocker={selectedLocker}
+        
       />
 
       <div className="pageContainer">
         <div className="container">
           <FreeCabinets
+           
             freeCabinets={freeCabinets}
             selectedParcel={selectedParcel}
             handlePutParcelIn={handlePutParcelIn}
@@ -134,14 +142,23 @@ function App() {
           />
 
           <UndeliveredParcels
-            selectedParcel={selectedParcel}
+        selectedParcel={selectedParcel}
             undeliveredParcels={undeliveredParcels}
             handleSelectedParcel={handleSelectedParcel}
             message={message}
             selectedLocker={selectedLocker}
+
           />
         </div>
       </div>
+
+      {/* test for notification page */}
+<div>
+  --------------------------------------------------------------------
+  <h1>test for notification page</h1>
+  <p>{notification}</p>
+</div>
+{notification}
     </div>
   );
 }
