@@ -11,7 +11,7 @@ function App() {
   const [showPickupCabinets, setShowPickupCabinets] = useState(false);
   const [showundeliveredparcels, setShowUndeliveredParcels] = useState(false);
   const [undeliveredParcels, setUndeliveredParcels] = useState([]);
-  const[selectedParcel,setSelectParcel]=useState('');
+  const [selectedParcel, setSelectParcel] = useState("");
   const [buttonClicked, setButtonClicked] = useState(false);
 
   const handleLockerSelect = (event) => {
@@ -63,36 +63,50 @@ function App() {
           `parcel in cabinet${pickupcabinetNumber} is picked,
          cabinet${pickupcabinetNumber} is free now`
         );
+        setTimeout(() => {
+          setPickupCabinets((prevpickupCabinets) =>
+          prevpickupCabinets.filter((pickupcabinet) => pickupcabinet.number !== pickupcabinetNumber)
+          );
+          
+        }, 2000); 
       })
       .catch((err) => {
         console.error("error updating cabinet status:", err);
       });
   };
 
-  const handleSelectedParcel=(parcelid)=>{
-
-    setSelectParcel(parcelid)
+  const handleSelectedParcel = (parcelid) => {
+    setSelectParcel(parcelid);
     setMessage(`parcel ${parcelid} is selected,`);
     setButtonClicked(true);
+  };
 
-  }
+  const handlePutParcelIn = (freecabinetnumber) => {
+    const parcelid = selectedParcel;
+    Axios.put("http://localhost:3003/updatefordelivery", {
+      freecabinetNumber: freecabinetnumber,
+      parcelid: parcelid,
+    })
+      .then((response) => {
+        setButtonClicked(true);
+        setMessage(`parcel ${parcelid} is put in cabinet${freecabinetnumber}`);
 
-  const handlePutParcelIn=(freecabinetnumber)=>{
-    const parcelid=selectedParcel;
-    Axios.put("http://localhost:3003/updatefordelivery",{
-      freecabinetNumber:freecabinetnumber,parcelid:parcelid}).then(
-        (response)=>{
-          setButtonClicked(true);
-          setMessage(`parcel ${parcelid} is put in cabinet${freecabinetnumber}`)
-        }
-      ).catch((err)=>{
-        console.log("error fetching updatefor delivery:",err)
-      })
-    
-  }
+        setTimeout(() => {
+          setFreeCabinets((prevCabinets) =>
+            prevCabinets.filter((freecabinet) => freecabinet.number !== freecabinetnumber)
+          );
+          setUndeliveredParcels((prevParcels) =>
+            prevParcels.filter((undeliveredparcel) => undeliveredparcel.parcelid !== parcelid)
+          );
+        }, 2000); 
 
+      }
+     )
 
-
+      .catch((err) => {
+        console.log("error fetching updatefor delivery:", err);
+      });
+  };
 
   return (
     <div className="App">
@@ -117,7 +131,6 @@ function App() {
         {selectedLocker && <p>You selected:{selectedLocker}</p>}
       </div>
       <p>{message}</p>
-      
 
       {/* get pickupcabinets */}
       <div>
@@ -165,19 +178,23 @@ function App() {
                 show/hide free cabinet
               </button>
             )}
-        
+
             {showfreecabinets && (
               <div>
                 {freeCabinets.map((freecabinet) => (
                   <div key={freecabinet.cabinetid} className="Box">
                     <p>number:{freecabinet.number}</p>
                     <p>status:{freecabinet.cabinetstatus}</p>
-                    {selectedParcel&&<button className="selectfreecabinetbutton  smallbutton"
-                    onClick={()=>{
-                      handlePutParcelIn(freecabinet.number)
-                      }}>
-                      put parcel in
-                    </button>}
+                    {selectedParcel && (
+                      <button
+                        className="selectfreecabinetbutton  smallbutton"
+                        onClick={() => {
+                          handlePutParcelIn(freecabinet.number);
+                        }}
+                      >
+                        put parcel in
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -197,30 +214,37 @@ function App() {
             )}
             {showundeliveredparcels && selectedLocker && (
               <div>
-                {!selectedParcel?<h2 style={{color:'red'}}>delivery step:<br/>
-                1. select one parcel <br/>
-                2.select a freecabinet to put in 
-                </h2> : <h2 style={{color:'red'}}>{message}</h2>}
+                {!selectedParcel ? (
+                  <h2 style={{ color: "red" }}>
+                    delivery step:
+                    <br />
+                    1. select one parcel <br />
+                    2.select a freecabinet to put in
+                  </h2>
+                ) : (
+                  <h2 style={{ color: "red" }}>{message}</h2>
+                )}
                 {undeliveredParcels.map((undeliveredparcel) => (
                   <div key={undeliveredparcel.parcelid} className="Box">
                     <p>parcelid:{undeliveredparcel.parcelid}</p>
                     <p>status:{undeliveredparcel.status}</p>
-                   
-                    <p>pickuplocation:{undeliveredparcel.pickuplocation}</p>
-                    <button className="smallbutton"
-                     onClick={() => {
-                      if (!buttonClicked) {
+
+                    
+                    <button
+                      className="smallbutton"
+                      onClick={() => {
+                        // if (!buttonClicked) {
                         handleSelectedParcel(undeliveredparcel.parcelid);
-                      }
-                    }}
-                    disabled={buttonClicked}
-                    style={{
-                      backgroundColor: buttonClicked ? '#a0c4ff' : '#fff', // Light blue when disabled
-                      color: buttonClicked ? '#fff' : '#3a76b5', // White text when disabled
-                      border: buttonClicked ? '2px solid #a0c4ff' : '2px solid #3a76b5', // Light blue border when disabled
-                    }}
-                  >
-                    {buttonClicked ? 'Selected' : 'Select it'}
+                      }}
+                      // disabled={buttonClicked}
+                      // style={{
+                      //   backgroundColor: buttonClicked ? '#a0c4ff' : '#fff',
+                      //   color: buttonClicked ? '#fff' : '#3a76b5',
+                      //   border: buttonClicked ? '2px solid #a0c4ff' : '2px solid #3a76b5',
+                      // }}
+                    >
+                      {/* // {buttonClicked ? 'Selected' : 'Select it'} */}
+                      select it
                     </button>
                   </div>
                 ))}
