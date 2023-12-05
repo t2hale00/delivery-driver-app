@@ -16,7 +16,7 @@ function App() {
   const [selectedParcel, setSelectedParcel] = useState("");
   const [buttonClicked, setButtonClicked] = useState(false);
 const[notification,setNotification]=useState('')
-const[selectedParcelUserId,setselectedParcelUserId]=useState('');
+const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
 
   const handleLockerSelect = (event) => {
     const lockerValue = event.target.value;
@@ -78,20 +78,21 @@ const[selectedParcelUserId,setselectedParcelUserId]=useState('');
       });
   };
 
-  const handleSelectedParcel = (parcelid,userid) => {
+  const handleSelectedParcel = (parcelid,recipientname) => {
     setSelectedParcel(parcelid);
     setMessage(`parcel ${parcelid} is selected,`);
     setButtonClicked(true);
-   setselectedParcelUserId(userid)
+    setSelectedParcelrecipientName(recipientname)
   };
 
   const handlePutParcelIn = (freecabinetnumber) => {
     const parcelid = selectedParcel;
- const userId=selectedParcelUserId
+ const recipientname=selectedParcelrecipientName
+ 
     Axios.put("http://localhost:3003/updatefordelivery", {
       freecabinetNumber: freecabinetnumber,
       parcelid: parcelid,
-      userid:userId
+      recipientname:recipientname
     })
       .then((response) => {
         setButtonClicked(true);

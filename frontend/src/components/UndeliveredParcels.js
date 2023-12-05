@@ -31,10 +31,12 @@ function UndeliveredParcels({  undeliveredParcels, handleSelectedParcel, selecte
             <div key={undeliveredparcel.parcelid} className="Box">
               <p>Parcel ID: {undeliveredparcel.parcelid}</p>
               <p>Status: {undeliveredparcel.status}</p>
+              <p>userid:{undeliveredparcel.userId}</p>
+              <p>recipientname:{undeliveredparcel.recipientname}</p>
               <button
                 className="smallbutton"
                 onClick={() => {
-                  handleSelectedParcel(undeliveredparcel.parcelid);
+                  handleSelectedParcel(undeliveredparcel.parcelid,undeliveredparcel.recipientname);
                 }}
               >
                 Select it

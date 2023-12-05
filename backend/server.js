@@ -71,28 +71,57 @@ app.put("/updateforpickup",(req,res)=>{
   )
 })
 
-app.put("/updatefordelivery",(req,res)=>{
-  const freecabinetNumber=req.body.freecabinetNumber
-  const parcelid=req.body.parcelid;
-  const  userid=req.body.userid;
- 
-  // const freecabinetlocation=req.body.freecabinetlocation
+app.put("/updatefordelivery", (req, res) => {
+  const freecabinetNumber = req.body.freecabinetNumber;
+  const parcelid = req.body.parcelid;
+  const senderid = req.body.userid; // Assuming this is the sender's ID
+
+  // Fetch recipient ID based on recipient name
+  const recipientName = req.body.recipientname; // Make sure to include recipientName in your request from the frontend
+
   db.query(
-    "update cabinets as c join parcels as p  set c.cabinetstatus= 'topickup', p.status='topickup' ,c.code=p.reservationcode ,p.iscodevalid=true,p.pickuplocation= c.location where c.number=? and p.parcelid=?",[freecabinetNumber,parcelid],
-    (err,result)=>{
-      if (err) {
-        console.error(err);
+    "SELECT userid FROM user WHERE name = ?",
+    [recipientName],
+    (recipientErr, recipientResult) => {
+      if (recipientErr) {
+        console.error(recipientErr);
         res.status(500).send("Internal Server Error");
-      } else {
-        db.query(
-          "insert into notification (type,content,userid,timestamp) values('pickup','your sending parcel is sent to destination ',?,now())",[userid]
-        )
-        res.send(`Cabinet ${freecabinetNumber} status changed,`);
-        console.log(`Cabinet ${freecabinetNumber} status changed,parcel${parcelid} status changed`)
+        return;
       }
+
+      const recipientid = recipientResult[0].userid;
+
+      // Update cabinets and parcels
+      db.query(
+        "UPDATE cabinets AS c JOIN parcels AS p ON c.number = ? AND p.parcelid = ? SET c.cabinetstatus = 'topickup', p.status = 'topickup', c.code = p.reservationcode, p.iscodevalid = true, p.pickuplocation = c.location WHERE c.number = ? AND p.parcelid = ?",
+        [freecabinetNumber, parcelid, freecabinetNumber, parcelid],
+        (updateErr, updateResult) => {
+          if (updateErr) {
+            console.error(updateErr);
+            res.status(500).send("Internal Server Error");
+            return;
+          }
+
+          // Insert notification
+          db.query(
+            "INSERT INTO notification (type, content, userid, timestamp) VALUES ('pickup', 'Your sending parcel is sent to destination', ?, NOW())",
+            [recipientid], // Use recipientid instead of senderid
+            (notificationErr, notificationResult) => {
+              if (notificationErr) {
+                console.error(notificationErr);
+                res.status(500).send("Internal Server Error");
+              } else {
+                res.send(`Cabinet ${freecabinetNumber} status changed.`);
+                console.log(`Cabinet ${freecabinetNumber} status changed, parcel ${parcelid} status changed`);
+              }
+            }
+          );
+        }
+      );
     }
-  )
-})
+  );
+});
+
 
 
 
