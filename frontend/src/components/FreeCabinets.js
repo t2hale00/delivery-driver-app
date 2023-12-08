@@ -19,14 +19,14 @@ function FreeCabinets({ freeCabinets, selectedParcel, handlePutParcelIn,selected
       {showFreeCabinets && (
         <div>
           {freeCabinets.map((freecabinet) => (
-            <div key={freecabinet.cabinetid} className="Box">
-              <p>number: {freecabinet.number}</p>
+            <div key={freecabinet.cabinetID} className="Box">
+              <p>number: {freecabinet.CabinetNumber}</p>
               <p>status: {freecabinet.cabinetstatus}</p>
               {selectedParcel && (
                 <button
                   className="selectfreecabinetbutton  smallbutton"
                   onClick={() => {
-                    handlePutParcelIn(freecabinet.number);
+                    handlePutParcelIn(freecabinet.cabinetID,freecabinet.CabinetNumber,freecabinet.Locationname);
                   }}
                 >
                   Put parcel in

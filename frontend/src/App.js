@@ -55,20 +55,20 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
       });
   };
 
-  const handlePickupCabinets = (pickupcabinetNumber) => {
+  const handlePickupCabinets = (pickupcabinetID,pickupcabinetnumber) => {
     Axios.put("http://localhost:3003/updateforpickup", {
-      pickupcabinetNumber: pickupcabinetNumber,
+      pickupcabinetID: pickupcabinetID,
     })
       .then((response) => {
         console.log("cabinet status changes to available");
         setMessage(
-          `parcel in cabinet${pickupcabinetNumber} is picked,
-         cabinet${pickupcabinetNumber} is free now`
+          `parcel in cabinet${pickupcabinetnumber} is picked,
+         cabinet${pickupcabinetnumber} is free now`
         );
         setTimeout(() => {
           setPickupCabinets((prevpickupCabinets) =>
             prevpickupCabinets.filter(
-              (pickupcabinet) => pickupcabinet.number !== pickupcabinetNumber
+              (pickupcabinet) => pickupcabinet.cabinetID !==  pickupcabinetID
             )
           );
         }, 2000);
@@ -85,14 +85,16 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
     setSelectedParcelrecipientName(recipientname)
   };
 
-  const handlePutParcelIn = (freecabinetnumber) => {
+  const handlePutParcelIn = (freecabinetid,freecabinetnumber,freecabinetLocationname) => {
     const parcelid = selectedParcel;
- const recipientname=selectedParcelrecipientName
+ const recipientname=selectedParcelrecipientName;
+ const cabinetlocationname=freecabinetLocationname
  
     Axios.put("http://localhost:3003/updatefordelivery", {
-      freecabinetNumber: freecabinetnumber,
+      freecabinetid: freecabinetid,
       parcelid: parcelid,
-      recipientname:recipientname
+      recipientname:recipientname,
+      freecabinetlocation:cabinetlocationname,
     })
       .then((response) => {
         setButtonClicked(true);
@@ -101,7 +103,7 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
         setTimeout(() => {
           setFreeCabinets((prevCabinets) =>
             prevCabinets.filter(
-              (freecabinet) => freecabinet.number !== freecabinetnumber
+              (freecabinet) => freecabinet.cabinetID !== freecabinetid
             )
           );
           setUndeliveredParcels((prevParcels) =>
@@ -153,13 +155,9 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
         </div>
       </div>
 
-      {/* test for notification page */}
-<div>
-  --------------------------------------------------------------------
-  <h1>test for notification page</h1>
-  <p>{notification}</p>
-</div>
-{notification}
+
+
+
     </div>
   );
 }

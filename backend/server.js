@@ -13,13 +13,13 @@ const db = mysql.createConnection({
   user: "root",
   host: "localhost",
   password: "root",
-  database: "driverdb",
+  database: "consumerdbtest",
 });
 
 app.get("/getFreeCabinets",(req,res)=>{
     const {locker}=req.query;
 
-    db.query("select * from cabinets where cabinetstatus='available' and location =?",[locker],(err,result)=>{
+    db.query("select * from cabinets where cabinetstatus='Available' and Locationname =?",[locker],(err,result)=>{
         if(err){
             console.log(err);
         }else{
@@ -32,7 +32,7 @@ app.get("/getFreeCabinets",(req,res)=>{
 app.get("/getPickupCabinets",(req,res)=>{
   const {locker}=req.query;
 
-  db.query("select * from cabinets where cabinetstatus='todelivery' and location =?",[locker],(err,result)=>{
+  db.query("select * from cabinets where cabinetstatus='Occupied' and Locationname =?",[locker],(err,result)=>{
       if(err){
           console.log(err);
       }else{
@@ -45,7 +45,7 @@ app.get("/getPickupCabinets",(req,res)=>{
 app.get("/getUndeliveredParcels",(req,res)=>{
   const {locker}=req.query;
 
-  db.query("select * from parcels where status='undelivered' and location!=?",[locker],(err,result)=>{
+  db.query("select * from parcel where status='Parcel En Route' and location!=?",[locker],(err,result)=>{
       if(err){
           console.log(err);
       }else{
@@ -56,33 +56,40 @@ app.get("/getUndeliveredParcels",(req,res)=>{
 })
 
 app.put("/updateforpickup",(req,res)=>{
-  const pickupcabinetNumber=req.body.pickupcabinetNumber
+  const pickupcabinetID=req.body.pickupcabinetID
   db.query(
-    "update cabinets as c join parcels as p on c.code=p.reservationcode set c.cabinetstatus= 'available', p.status='undelivered' where c.number=?",[pickupcabinetNumber],
+    "update cabinets as c join parcel as p on c.Code=p.reservationCode set c.cabinetstatus= 'Available', p.status='Parcel En Route' where c.cabinetID=? and p.reservationCode=c.Code",[pickupcabinetID],
     (err,result)=>{
       if (err) {
         console.error(err);
         res.status(500).send("Internal Server Error");
       } else {
-        res.send(`Cabinet ${pickupcabinetNumber} status changed`);
-        console.log(`Cabinet ${pickupcabinetNumber} status changed`)
+        res.send(`Cabinet ${pickupcabinetID} status changed`);
+        console.log(`Cabinet ${pickupcabinetID} status changed`)
       }
     }
   )
 })
 
-app.put("/updatefordelivery", (req, res) => {
-  const freecabinetNumber = req.body.freecabinetNumber;
+
+
+//  generate a unique 4-digit code
+function generateUniqueCode() {
+
+  return Math.floor(1000 + Math.random() * 9000);
+}
+
+app.put("/updatefordelivery", async (req, res) => {
+  const freecabinetid = req.body.freecabinetid;
   const parcelid = req.body.parcelid;
-  const senderid = req.body.userid; // Assuming this is the sender's ID
+  const recipientName = req.body.recipientname;
+  const freecabinetlocation= req.body.freecabinetlocation
 
   // Fetch recipient ID based on recipient name
-  const recipientName = req.body.recipientname; // Make sure to include recipientName in your request from the frontend
-
   db.query(
     "SELECT userid FROM user WHERE name = ?",
     [recipientName],
-    (recipientErr, recipientResult) => {
+    async (recipientErr, recipientResult) => {
       if (recipientErr) {
         console.error(recipientErr);
         res.status(500).send("Internal Server Error");
@@ -91,10 +98,13 @@ app.put("/updatefordelivery", (req, res) => {
 
       const recipientid = recipientResult[0].userid;
 
-      // Update cabinets and parcels
+      // Generate a unique 4-digit code
+      const generatedCode = generateUniqueCode();
+
+      // Update cabinets and parcels with the generated code
       db.query(
-        "UPDATE cabinets AS c JOIN parcels AS p ON c.number = ? AND p.parcelid = ? SET c.cabinetstatus = 'topickup', p.status = 'topickup', c.code = p.reservationcode, p.iscodevalid = true, p.pickuplocation = c.location WHERE c.number = ? AND p.parcelid = ?",
-        [freecabinetNumber, parcelid, freecabinetNumber, parcelid],
+        "UPDATE cabinets AS c JOIN parcel AS p ON c.CabinetID = ? AND p.parcelid = ? SET c.cabinetstatus = 'Delivered', p.status = 'Parcel Ready For Pickup', c.code = ?, p.pickupcode = ?, p.iscodevalid = true, p.pickuplocation = c.Locationname WHERE c.CabinetID = ? AND p.parcelid = ?",
+        [freecabinetid, parcelid, generatedCode, generatedCode, freecabinetid, parcelid],
         (updateErr, updateResult) => {
           if (updateErr) {
             console.error(updateErr);
@@ -104,15 +114,15 @@ app.put("/updatefordelivery", (req, res) => {
 
           // Insert notification
           db.query(
-            "INSERT INTO notification (type, content, userid, timestamp) VALUES ('pickup', 'Your sending parcel is sent to destination', ?, NOW())",
-            [recipientid], // Use recipientid instead of senderid
+           ' INSERT INTO notification (type, content, userid, timestamp)  VALUES ("pickup", "You have a parcel  ready for pick up, pickup code is ? and pickup location is ?", ?, NOW()); ',
+            [generatedCode,freecabinetlocation,recipientid],
             (notificationErr, notificationResult) => {
               if (notificationErr) {
                 console.error(notificationErr);
                 res.status(500).send("Internal Server Error");
               } else {
-                res.send(`Cabinet ${freecabinetNumber} status changed.`);
-                console.log(`Cabinet ${freecabinetNumber} status changed, parcel ${parcelid} status changed`);
+                res.send(`Cabinetid ${freecabinetid} status changed.`);
+                console.log(`Cabinetid ${freecabinetid} status changed, parcel ${parcelid} status changed,notification for user${recipientid} sent`);
               }
             }
           );
@@ -121,7 +131,6 @@ app.put("/updatefordelivery", (req, res) => {
     }
   );
 });
-
 
 
 

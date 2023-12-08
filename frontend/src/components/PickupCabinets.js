@@ -20,13 +20,14 @@ function PickupCabinets({ pickupCabinets, handlePickupCabinets,selectedLocker, }
       {showPickupCabinets && (
         <div>
           {pickupCabinets.map((pickupcabinet) => (
-            <div key={pickupcabinet.cabinetid} className="Box">
-              <p>cabinet number: {pickupcabinet.number}</p>
+            <div key={pickupcabinet.cabinetID} className="Box">
+              <p>cabinet id: {pickupcabinet.cabinetID}</p>
               <p>status: {pickupcabinet.cabinetstatus}</p>
+              <p>cabinet number{pickupcabinet.CabinetNumber}</p>
               <button
                 className="smallbutton"
                 onClick={() => {
-                  handlePickupCabinets(pickupcabinet.number);
+                  handlePickupCabinets(pickupcabinet.cabinetID,pickupcabinet.CabinetNumber);
                 }}
               >
                 Pick up the parcel
