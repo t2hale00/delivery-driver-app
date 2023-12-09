@@ -119,7 +119,7 @@ app.put("/updatefordelivery/insert", async (req, res) => {
   const parcelid = req.body.parcelid;
   const recipientName = req.body.recipientname;
   const freecabinetlocation= req.body.freecabinetlocation;
-  const generatedCode = res.locals.generatedCode;
+  const generatedcode = res.locals.generatedCode;
 
 // Fetch recipient ID based on recipient name
   db.query(
@@ -134,13 +134,23 @@ app.put("/updatefordelivery/insert", async (req, res) => {
 
       const recipientid = recipientResult[0].userid;
 
+db.query(
+  "select PickupCode from parcel where parcelid=?",[parcelid],
+  (pickupCodeErr,pickupCodeResult)=>{
+    if(pickupCodeErr){
+      console.error(pickupCodeErr);
+      res.status(500).send('internal server error');
+      return
+    }
+
+const generatedcode=pickupCodeResult[0].PickupCode;
 
 
 // Fetch recipient ID based on recipient name
   // Insert notification
           db.query(
            ' INSERT INTO notification (type, content, userid, timestamp)  VALUES ("pickup", "You have a parcel  ready for pick up, pickup code is ? and pickup location is ?", ?, NOW()); ',
-            [generatedCode,freecabinetlocation,recipientid],
+            [generatedcode,freecabinetlocation,recipientid],
             (notificationErr, notificationResult) => {
               if (notificationErr) {
                 console.error(notificationErr);
@@ -148,10 +158,11 @@ app.put("/updatefordelivery/insert", async (req, res) => {
 
               } else {
                 res.send(`recipient ${recipientid} got notification.`);
-                console.log(' inserted notification');
+                console.log(`generatedcode ${generatedcode},freecabinetlocation${freecabinetlocation}`);
               }
 
-
+  }
+)
 })
 })
 })

@@ -87,7 +87,7 @@ function App() {
     setSelectedParcelrecipientName(recipientname);
   };
 
-  const handlePutParcelIn = (freecabinetid, freecabinetnumber) => {
+  const handlePutParcelIn = (freecabinetid, freecabinetnumber,freecabinetlocation) => {
     const parcelid = selectedParcel;
     const recipientname = selectedParcelrecipientName;
 
@@ -121,6 +121,8 @@ function App() {
         freecabinetid: freecabinetid,
         parcelid: parcelid,
         recipientname: recipientname,
+        freecabinetlocation:freecabinetlocation
+
       })
         .then((response) => {
          console.log('inserted notification')

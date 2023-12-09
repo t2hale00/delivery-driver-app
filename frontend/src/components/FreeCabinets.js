@@ -26,7 +26,7 @@ function FreeCabinets({ freeCabinets, selectedParcel, handlePutParcelIn,selected
                 <button
                   className="selectfreecabinetbutton  smallbutton"
                   onClick={() => {
-                    handlePutParcelIn(freecabinet.cabinetID,freecabinet.CabinetNumber,freecabinet.Locationname);
+                    handlePutParcelIn(freecabinet.cabinetID,freecabinet.CabinetNumber,freecabinet.Locationname,freecabinet.Locationname);
                   }}
                 >
                   Put parcel in
