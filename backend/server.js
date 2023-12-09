@@ -58,7 +58,7 @@ app.get("/getUndeliveredParcels",(req,res)=>{
 app.put("/updateforpickup",(req,res)=>{
   const pickupcabinetID=req.body.pickupcabinetID
   db.query(
-    "update cabinets as c join parcel as p on c.Code=p.reservationCode set c.cabinetstatus= 'Available', p.status='Parcel En Route' where c.cabinetID=? and p.reservationCode=c.Code",[pickupcabinetID],
+    "update cabinets as c join parcel as p on c.Code=p.reservationCode set c.cabinetstatus= 'Available', c.IsAvailable=true, p.status='Parcel En Route' where c.cabinetID=? and p.reservationCode=c.Code",[pickupcabinetID],
     (err,result)=>{
       if (err) {
         console.error(err);
@@ -93,7 +93,7 @@ app.put("/updatefordelivery/update", async (req, res) => {
 
       // Update cabinets and parcels with the generated code
       db.query(
-        "UPDATE cabinets AS c JOIN parcel AS p ON c.CabinetID = ? AND p.parcelid = ? SET c.cabinetstatus = 'Delivered', p.status = 'Parcel Ready For Pickup', c.code = ?, p.pickupcode = ?, p.iscodevalid = true, p.pickuplocation = c.Locationname WHERE c.CabinetID = ? AND p.parcelid = ?",
+        "UPDATE cabinets AS c JOIN parcel AS p ON c.CabinetID = ? AND p.parcelid = ? SET c.cabinetstatus = 'Delivered', c.IsAvailable=false, p.status = 'Parcel Ready For Pickup', c.code = ?, p.pickupcode = ?, p.iscodevalid = true, p.pickuplocation = c.Locationname WHERE c.CabinetID = ? AND p.parcelid = ?",
         [freecabinetid, parcelid, generatedCode, generatedCode, freecabinetid, parcelid],
         (updateErr, updateResult) => {
           if (updateErr) {
@@ -105,7 +105,7 @@ app.put("/updatefordelivery/update", async (req, res) => {
             console.log(`Cabinetid ${freecabinetid} status changed, parcel ${parcelid} status changed,`);
           }
 
-         
+
             }
           );
         }
