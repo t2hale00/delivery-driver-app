@@ -1,4 +1,4 @@
-// test
+// App.js
 import "./App.css";
 import React, { useState } from "react";
 import Axios from "axios";
@@ -15,15 +15,17 @@ function App() {
   const [undeliveredParcels, setUndeliveredParcels] = useState([]);
   const [selectedParcel, setSelectedParcel] = useState("");
   const [buttonClicked, setButtonClicked] = useState(false);
-const[notification,setNotification]=useState('')
-const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
+  const [notification, setNotification] = useState("");
+  const [selectedParcelrecipientName, setSelectedParcelrecipientName] =
+    useState("");
+    const[notificationmessage,setNotificationMessage]=useState('')
 
   const handleLockerSelect = (event) => {
     const lockerValue = event.target.value;
     setSelectedLocker(lockerValue);
     setMessage("");
-  
-//getFreeCabinets
+
+    //getFreeCabinets
     Axios.get("http://localhost:3003/getFreeCabinets", {
       params: { locker: lockerValue },
     })
@@ -33,7 +35,7 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
       .catch((err) => {
         console.log("error fetching free cabinets");
       });
- //getPickupCabinets
+    //getPickupCabinets
     Axios.get("http://localhost:3003/getPickupCabinets", {
       params: { locker: lockerValue },
     })
@@ -43,7 +45,7 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
       .catch((err) => {
         console.log("error fetching pickup cabinets");
       });
-  //getUndeliveredParcels
+    //getUndeliveredParcels
     Axios.get("http://localhost:3003/getUndeliveredParcels", {
       params: { locker: lockerValue },
     })
@@ -55,20 +57,20 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
       });
   };
 
-  const handlePickupCabinets = (pickupcabinetID,pickupcabinetnumber) => {
+  const handlePickupCabinets = (pickupcabinetID,pickupCabinetNumber) => {
     Axios.put("http://localhost:3003/updateforpickup", {
       pickupcabinetID: pickupcabinetID,
     })
       .then((response) => {
         console.log("cabinet status changes to available");
         setMessage(
-          `parcel in cabinet${pickupcabinetnumber} is picked,
-         cabinet${pickupcabinetnumber} is free now`
+          `parcel in cabinet number${pickupCabinetNumber} is picked,
+         cabinet${pickupCabinetNumber} is free now`
         );
         setTimeout(() => {
           setPickupCabinets((prevpickupCabinets) =>
             prevpickupCabinets.filter(
-              (pickupcabinet) => pickupcabinet.cabinetID !==  pickupcabinetID
+              (pickupcabinet) => pickupcabinet.cabinetID !== pickupcabinetID
             )
           );
         }, 2000);
@@ -78,28 +80,25 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
       });
   };
 
-  const handleSelectedParcel = (parcelid,recipientname) => {
+  const handleSelectedParcel = (parcelid, recipientname) => {
     setSelectedParcel(parcelid);
     setMessage(`parcel ${parcelid} is selected,`);
     setButtonClicked(true);
-    setSelectedParcelrecipientName(recipientname)
+    setSelectedParcelrecipientName(recipientname);
   };
 
-  const handlePutParcelIn = (freecabinetid,freecabinetnumber,freecabinetLocationname) => {
+  const handlePutParcelIn = (freecabinetid, freecabinetnumber) => {
     const parcelid = selectedParcel;
- const recipientname=selectedParcelrecipientName;
- const cabinetlocationname=freecabinetLocationname
- 
-    Axios.put("http://localhost:3003/updatefordelivery", {
+    const recipientname = selectedParcelrecipientName;
+
+    Axios.put("http://localhost:3003/updatefordelivery/update", {
       freecabinetid: freecabinetid,
       parcelid: parcelid,
-      recipientname:recipientname,
-      freecabinetlocation:cabinetlocationname,
+      recipientname: recipientname,
     })
       .then((response) => {
         setButtonClicked(true);
-        setMessage(`parcel ${parcelid} is put in cabinet${freecabinetnumber}`);
-
+        setMessage(`parcel ${parcelid} is put in cabinet${freecabinetnumber},If recipients are registered user in the app,they will receive notifications from the app.`);
         setTimeout(() => {
           setFreeCabinets((prevCabinets) =>
             prevCabinets.filter(
@@ -116,6 +115,23 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
       .catch((err) => {
         console.log("error fetching update for delivery:", err);
       });
+
+
+      Axios.put("http://localhost:3003/updatefordelivery/insert", {
+        freecabinetid: freecabinetid,
+        parcelid: parcelid,
+        recipientname: recipientname,
+      })
+        .then((response) => {
+         console.log('inserted notification')
+        })
+        .catch((err) => {
+          console.log("error fetching insert notification for delivery:", err);
+        });
+
+
+
+
   };
 
   return (
@@ -125,19 +141,17 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
         handleLockerSelect={handleLockerSelect}
       />
       <p>{message}</p>
+      <p>{notificationmessage}</p>
 
       <PickupCabinets
-       
         pickupCabinets={pickupCabinets}
         handlePickupCabinets={handlePickupCabinets}
         selectedLocker={selectedLocker}
-        
       />
 
       <div className="pageContainer">
         <div className="container">
           <FreeCabinets
-           
             freeCabinets={freeCabinets}
             selectedParcel={selectedParcel}
             handlePutParcelIn={handlePutParcelIn}
@@ -145,19 +159,14 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
           />
 
           <UndeliveredParcels
-        selectedParcel={selectedParcel}
+            selectedParcel={selectedParcel}
             undeliveredParcels={undeliveredParcels}
             handleSelectedParcel={handleSelectedParcel}
             message={message}
             selectedLocker={selectedLocker}
-
           />
         </div>
       </div>
-
-
-
-
     </div>
   );
 }
