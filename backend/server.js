@@ -158,7 +158,7 @@ const generatedcode=pickupCodeResult[0].PickupCode;
 
               } else {
                 res.send(`recipient ${recipientid} got notification.`);
-                console.log(`generatedcode ${generatedcode},freecabinetlocation${freecabinetlocation}`);
+                console.log(`generatedcode ${generatedcode},freecabinetlocation${freecabinetlocation},inserted notification`);
               }
 
   }
