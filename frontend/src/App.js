@@ -98,7 +98,8 @@ function App() {
     })
       .then((response) => {
         setButtonClicked(true);
-        setMessage(`parcel ${parcelid} is put in cabinet${freecabinetnumber}`);
+        setMessage(`parcel ${parcelid} is put in cabinet${freecabinetnumber} `);
+        setNotificationMessage('recipients will receive notification if they registered this app')
         setTimeout(() => {
           setFreeCabinets((prevCabinets) =>
             prevCabinets.filter(
