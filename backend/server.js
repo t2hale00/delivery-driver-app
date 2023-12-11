@@ -12,8 +12,8 @@ app.use(bodyParser.json());
 const db = mysql.createConnection({
   user: "root",
   host: "localhost",
-  password: "root",
-  database: "consumerdbtest",
+  password: "LEAHmae185!!!",
+  database: "consumerdb",
 });
 
 app.get("/getFreeCabinets",(req,res)=>{
