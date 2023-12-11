@@ -133,7 +133,7 @@ app.put("/updatefordelivery/insert", async (req, res) => {
   const parcelid = req.body.parcelid;
   const recipientName = req.body.recipientname;
   const freecabinetlocation = req.body.freecabinetlocation;
-  const generatedcode = res.locals.generatedCode;
+  // const generatedcode = res.locals.generatedCode;
 
   // Check if recipient is a registered user
   db.query("SELECT name FROM user", (getnameErr, getnameResult) => {
@@ -158,20 +158,35 @@ app.put("/updatefordelivery/insert", async (req, res) => {
             res.status(500).send("Internal Server Error");
             return;
           }
+          
           const recipientid = recipientResult[0].userid;
 
-          // Insert notification
           db.query(
-            ' INSERT INTO notification (type, content, userid, timestamp)  VALUES ("pickup", "You have a parcel  ready for pick up, pickup code is ? and pickup location is ?", ?, NOW()); ',
-            [generatedcode, freecabinetlocation, recipientid],
-            (notificationErr, notificationResult) => {
-              if (notificationErr) {
-                console.error(notificationErr);
+            "SELECT PickupCode FROM parcel WHERE parcelid = ?",
+            [parcelid],
+            (pickupCodeErr, pickupCodeResult) => {
+              if (pickupCodeErr) {
+                console.error(pickupCodeErr);
                 res.status(500).send("Internal Server Error");
-              } else {
-                res.send(`Recipient ${recipientid} got notification.`);
-                console.log(`Inserted notification for picked up`);
+                return;
               }
+
+              const generatedcode = pickupCodeResult[0].PickupCode;
+
+              // Insert notification
+              db.query(
+                'INSERT INTO notification (type, content, userid, timestamp) VALUES ("pickup", "You have a parcel ready for pick up, pickup code is ? and pickup location is ?", ?, NOW());',
+                [generatedcode, freecabinetlocation, recipientid],
+                (notificationErr, notificationResult) => {
+                  if (notificationErr) {
+                    console.error(notificationErr);
+                    res.status(500).send("Internal Server Error");
+                  } else {
+                    res.send(`Recipient ${recipientid} got notification.`);
+                    console.log(`Inserted notification for picked up`);
+                  }
+                }
+              );
             }
           );
         }
@@ -182,6 +197,8 @@ app.put("/updatefordelivery/insert", async (req, res) => {
     }
   });
 });
+
+
 
 // Fetch recipient ID based on recipient name
 //   db.query(
