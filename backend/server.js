@@ -58,7 +58,7 @@ app.get("/getUndeliveredParcels",(req,res)=>{
 app.put("/updateforpickup",(req,res)=>{
   const pickupcabinetID=req.body.pickupcabinetID
   db.query(
-    "update cabinets as c join parcel as p on c.Code=p.reservationCode set c.cabinetstatus= 'Available', p.status='Parcel En Route' where c.cabinetID=? and p.reservationCode=c.Code",[pickupcabinetID],
+    "update cabinets as c join parcel as p on c.Code=p.reservationCode set c.cabinetstatus= 'Available', c.IsAvailable=true, p.status='Parcel En Route' where c.cabinetID=? and p.reservationCode=c.Code",[pickupcabinetID],
     (err,result)=>{
       if (err) {
         console.error(err);
@@ -79,13 +79,49 @@ function generateUniqueCode() {
   return Math.floor(1000 + Math.random() * 9000);
 }
 
-app.put("/updatefordelivery", async (req, res) => {
+app.put("/updatefordelivery/update", async (req, res) => {
   const freecabinetid = req.body.freecabinetid;
   const parcelid = req.body.parcelid;
   const recipientName = req.body.recipientname;
   const freecabinetlocation= req.body.freecabinetlocation
 
-  // Fetch recipient ID based on recipient name
+  
+
+      // Generate a unique 4-digit code
+      const generatedCode = generateUniqueCode();
+        res.locals.generatedCode = generatedCode;
+
+      // Update cabinets and parcels with the generated code
+      db.query(
+        "UPDATE cabinets AS c JOIN parcel AS p ON c.CabinetID = ? AND p.parcelid = ? SET c.cabinetstatus = 'Delivered', c.IsAvailable=false, p.status = 'Parcel Ready For Pickup', c.code = ?, p.pickupcode = ?, p.iscodevalid = true, p.pickuplocation = c.Locationname WHERE c.CabinetID = ? AND p.parcelid = ?",
+        [freecabinetid, parcelid, generatedCode, generatedCode, freecabinetid, parcelid],
+        (updateErr, updateResult) => {
+          if (updateErr) {
+            console.error(updateErr);
+            res.status(500).send("Internal Server Error");
+            return;
+          }else{
+            res.send(`Cabinetid ${freecabinetid} status changed.`);
+            console.log(`Cabinetid ${freecabinetid} status changed, parcel ${parcelid} status changed,`);
+          }
+
+
+            }
+          );
+        }
+      );
+  //   }
+  // );
+// });
+
+app.put("/updatefordelivery/insert", async (req, res) => {
+  const freecabinetid = req.body.freecabinetid;
+  const parcelid = req.body.parcelid;
+  const recipientName = req.body.recipientname;
+  const freecabinetlocation= req.body.freecabinetlocation;
+  const generatedcode = res.locals.generatedCode;
+
+// Fetch recipient ID based on recipient name
   db.query(
     "SELECT userid FROM user WHERE name = ?",
     [recipientName],
@@ -98,43 +134,38 @@ app.put("/updatefordelivery", async (req, res) => {
 
       const recipientid = recipientResult[0].userid;
 
-      // Generate a unique 4-digit code
-      const generatedCode = generateUniqueCode();
+db.query(
+  "select PickupCode from parcel where parcelid=?",[parcelid],
+  (pickupCodeErr,pickupCodeResult)=>{
+    if(pickupCodeErr){
+      console.error(pickupCodeErr);
+      res.status(500).send('internal server error');
+      return
+    }
 
-      // Update cabinets and parcels with the generated code
-      db.query(
-        "UPDATE cabinets AS c JOIN parcel AS p ON c.CabinetID = ? AND p.parcelid = ? SET c.cabinetstatus = 'Delivered', p.status = 'Parcel Ready For Pickup', c.code = ?, p.pickupcode = ?, p.iscodevalid = true, p.pickuplocation = c.Locationname WHERE c.CabinetID = ? AND p.parcelid = ?",
-        [freecabinetid, parcelid, generatedCode, generatedCode, freecabinetid, parcelid],
-        (updateErr, updateResult) => {
-          if (updateErr) {
-            console.error(updateErr);
-            res.status(500).send("Internal Server Error");
-            return;
-          }
+const generatedcode=pickupCodeResult[0].PickupCode;
 
-          // Insert notification
+
+// Fetch recipient ID based on recipient name
+  // Insert notification
           db.query(
            ' INSERT INTO notification (type, content, userid, timestamp)  VALUES ("pickup", "You have a parcel  ready for pick up, pickup code is ? and pickup location is ?", ?, NOW()); ',
-            [generatedCode,freecabinetlocation,recipientid],
+            [generatedcode,freecabinetlocation,recipientid],
             (notificationErr, notificationResult) => {
               if (notificationErr) {
                 console.error(notificationErr);
                 res.status(500).send("Internal Server Error");
+
               } else {
-                res.send(`Cabinetid ${freecabinetid} status changed.`);
-                console.log(`Cabinetid ${freecabinetid} status changed, parcel ${parcelid} status changed,notification for user${recipientid} sent`);
+                res.send(`recipient ${recipientid} got notification.`);
+                console.log(`generatedcode ${generatedcode},freecabinetlocation${freecabinetlocation},inserted notification`);
               }
-            }
-          );
-        }
-      );
-    }
-  );
-});
 
-
-
-
+  }
+)
+})
+})
+})
 
 
 
