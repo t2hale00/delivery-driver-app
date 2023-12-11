@@ -120,6 +120,7 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
 
   return (
     <div className="App">
+      <h1>Parcel Delivery Driver App</h1>
       <LockerSelect
         selectedLocker={selectedLocker}
         handleLockerSelect={handleLockerSelect}
