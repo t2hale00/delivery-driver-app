@@ -12,14 +12,14 @@ function UndeliveredParcels({  undeliveredParcels, handleSelectedParcel, selecte
                   setShowUndeliveredParcels(!showUndeliveredParcels);
                 }}
               >
-                show/hide undelivered parcels
+                Show/Hide Undelivered Parcels
               </button>
             )}
       {showUndeliveredParcels && selectedLocker&& (
         <div>
           {!selectedParcel ? (
             <h2 style={{ color: "red" }}>
-              Delivery step:
+              Delivery steps:
               <br />
               1. Select one parcel <br />
               2. Select a free cabinet to put in
@@ -32,14 +32,16 @@ function UndeliveredParcels({  undeliveredParcels, handleSelectedParcel, selecte
               <p>Parcel ID: {undeliveredparcel.parcelid}</p>
               <p>Status: {undeliveredparcel.status}</p>
               <p>userid:{undeliveredparcel.userId}</p>
-              <p>recipientname:{undeliveredparcel.recipientname}</p>
+              <p>Sender Name:{undeliveredparcel.sendername}</p>
+              <p>Recipient Name:{undeliveredparcel.recipientname}</p>
+              <p>Recipient Address:{undeliveredparcel.recipientaddress}</p>
               <button
                 className="smallbutton"
                 onClick={() => {
                   handleSelectedParcel(undeliveredparcel.parcelid,undeliveredparcel.recipientname);
                 }}
               >
-                Select it
+                Select Parcel
               </button>
             </div>
           ))}

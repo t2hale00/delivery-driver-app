@@ -14,23 +14,23 @@ function PickupCabinets({ pickupCabinets, handlePickupCabinets,selectedLocker, }
               setShowPickupCabinets(!showPickupCabinets);
             }}
           >
-            show/hide pickup cabinet
+            Show/Hide Cabinets for Pickup
           </button>
         )}
       {showPickupCabinets && (
         <div>
           {pickupCabinets.map((pickupcabinet) => (
             <div key={pickupcabinet.cabinetID} className="Box">
-              <p>cabinet id: {pickupcabinet.cabinetID}</p>
-              <p>status: {pickupcabinet.cabinetstatus}</p>
-              <p>cabinet number{pickupcabinet.CabinetNumber}</p>
+              <p>Cabinet ID: {pickupcabinet.cabinetID}</p>
+              <p>Status: {pickupcabinet.cabinetstatus}</p>
+              <p>Cabinet Number{pickupcabinet.CabinetNumber}</p>
               <button
                 className="smallbutton"
                 onClick={() => {
                   handlePickupCabinets(pickupcabinet.cabinetID,pickupcabinet.CabinetNumber);
                 }}
               >
-                Pick up the parcel
+                Pick up the Parcel
               </button>
             </div>
           ))}

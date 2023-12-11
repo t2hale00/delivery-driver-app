@@ -2,9 +2,16 @@
   text-align: center;
 }
 
+.App h1 {
+  font-size: 30px;
+  font-weight: bold;
+  font-size: 50px;
+  color: #3a76b5;
+}
+
 @media (max-width: 600px) {
   .App {
-    padding: 10px;
+    padding: 20px;
   }
   button {
     padding: 12px 20px; 
@@ -34,6 +41,7 @@
   padding: 12px;
   margin-bottom: 15px;
   font-size: 20px;
+  color: #3a76b5;
 }
 
 p {

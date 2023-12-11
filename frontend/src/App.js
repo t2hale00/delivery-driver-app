@@ -15,8 +15,8 @@ function App() {
   const [undeliveredParcels, setUndeliveredParcels] = useState([]);
   const [selectedParcel, setSelectedParcel] = useState("");
   const [buttonClicked, setButtonClicked] = useState(false);
-const[notification,setNotification]=useState('')
-const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
+  const[notification,setNotification]=useState('')
+  const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
 
   const handleLockerSelect = (event) => {
     const lockerValue = event.target.value;
@@ -60,10 +60,10 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
       pickupcabinetID: pickupcabinetID,
     })
       .then((response) => {
-        console.log("cabinet status changes to available");
+        console.log("Cabinet status changes to available");
         setMessage(
-          `parcel in cabinet${pickupcabinetnumber} is picked,
-         cabinet${pickupcabinetnumber} is free now`
+          `Parcel in cabinet${pickupcabinetnumber} is picked,
+         cabinet${pickupcabinetnumber} is now Free/Available for reservation`
         );
         setTimeout(() => {
           setPickupCabinets((prevpickupCabinets) =>
@@ -80,7 +80,7 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
 
   const handleSelectedParcel = (parcelid,recipientname) => {
     setSelectedParcel(parcelid);
-    setMessage(`parcel ${parcelid} is selected,`);
+    setMessage(`Parcel ${parcelid} is selected,`);
     setButtonClicked(true);
     setSelectedParcelrecipientName(recipientname)
   };
@@ -98,7 +98,7 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
     })
       .then((response) => {
         setButtonClicked(true);
-        setMessage(`parcel ${parcelid} is put in cabinet${freecabinetnumber}`);
+        setMessage(`Parcel ${parcelid} is put in cabinet${freecabinetnumber}`);
 
         setTimeout(() => {
           setFreeCabinets((prevCabinets) =>
@@ -120,6 +120,7 @@ const[selectedParcelrecipientName,setSelectedParcelrecipientName]=useState('');
 
   return (
     <div className="App">
+      <h1> Parcel Delivery Driver App</h1>
       <LockerSelect
         selectedLocker={selectedLocker}
         handleLockerSelect={handleLockerSelect}

@@ -13,15 +13,15 @@ function FreeCabinets({ freeCabinets, selectedParcel, handlePutParcelIn,selected
                   setShowFreeCabinets(!showFreeCabinets);
                 }}
               >
-                show/hide free cabinet
+                Show/Hide Free Cabinets
               </button>
             )}
       {showFreeCabinets && (
         <div>
           {freeCabinets.map((freecabinet) => (
             <div key={freecabinet.cabinetID} className="Box">
-              <p>number: {freecabinet.CabinetNumber}</p>
-              <p>status: {freecabinet.cabinetstatus}</p>
+              <p>Cabinet Number: {freecabinet.CabinetNumber}</p>
+              <p>Status: {freecabinet.cabinetstatus}</p>
               {selectedParcel && (
                 <button
                   className="selectfreecabinetbutton  smallbutton"
@@ -29,7 +29,7 @@ function FreeCabinets({ freeCabinets, selectedParcel, handlePutParcelIn,selected
                     handlePutParcelIn(freecabinet.cabinetID,freecabinet.CabinetNumber,freecabinet.Locationname);
                   }}
                 >
-                  Put parcel in
+                  Put Parcel In
                 </button>
               )}
             </div>
