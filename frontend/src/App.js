@@ -64,8 +64,8 @@ function App() {
       .then((response) => {
         console.log("cabinet status changes to available");
         setMessage(
-          `parcel in cabinet number${pickupCabinetNumber} is picked,
-         cabinet${pickupCabinetNumber} is free now`
+          `Parcel in Cabinet Number ${pickupCabinetNumber} is picked,
+         Cabinet Number ${pickupCabinetNumber} is now Free/Available`
         );
         setTimeout(() => {
           setPickupCabinets((prevpickupCabinets) =>
@@ -82,7 +82,7 @@ function App() {
 
   const handleSelectedParcel = (parcelid, recipientname) => {
     setSelectedParcel(parcelid);
-    setMessage(`parcel ${parcelid} is selected,`);
+    setMessage(`Parcel ${parcelid} is selected,`);
     setButtonClicked(true);
     setSelectedParcelrecipientName(recipientname);
   };
@@ -98,8 +98,8 @@ function App() {
     })
       .then((response) => {
         setButtonClicked(true);
-        setMessage(`parcel ${parcelid} is put in cabinet${freecabinetnumber} `);
-        setNotificationMessage('recipients will receive notification if they registered this app')
+        setMessage(`Parcel ${parcelid} is put in cabinet ${freecabinetnumber} `);
+        setNotificationMessage('Recipients will receive notification if they are registered in this app')
         setTimeout(() => {
           setFreeCabinets((prevCabinets) =>
             prevCabinets.filter(
@@ -126,7 +126,7 @@ function App() {
 
       })
         .then((response) => {
-         console.log('inserted notification')
+         console.log('Inserted Notification')
         })
         .catch((err) => {
           console.log("error fetching insert notification for delivery:", err);
