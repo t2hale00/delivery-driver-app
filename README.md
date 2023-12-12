@@ -9,7 +9,7 @@ The Parcel App project was conceived as part of the Advanced Web Applications De
 
 ## Key Features
 
-### 1. Consumer User
+### 1. Consumer User Application
 
 - **User-Friendly Signup & Authentication:** Easy signup and authentication with username and password.
 - **Parcel History & Notifications:** View detailed parcel information, and history, and receive real-time notifications.
@@ -21,7 +21,7 @@ The Parcel App project was conceived as part of the Advanced Web Applications De
 - **User-Friendly Interface:** Simulate parcel pickup and delivery operations with a touchscreen interface.
 - **Secure Code Validation:** Enter pickup and delivery codes with validation for seamless operations.
 
-### 3. Driver App
+### 3. Delivery Driver Application
 
 - **Parcel Management:** Drivers can view available cabinets, mark parcels as picked up, and deliver to parcel lockers.
 
@@ -78,7 +78,6 @@ Thank you for your interest in Parcel App!
 
 **#ADVANCED WEB APPLICATION PROJECT**
 **#Web Development**
-**#consumer-user-app**
 
 ## This repository contains all the files used to make the **Delivery Driver Application**.
 
