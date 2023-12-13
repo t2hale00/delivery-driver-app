@@ -26,7 +26,7 @@ function App() {
     setMessage("");
 
     //getFreeCabinets
-    Axios.get("http://localhost:3003/getFreeCabinets", {
+    Axios.get("http://localhost:3200/getFreeCabinets", {
       params: { locker: lockerValue },
     })
       .then((response) => {
@@ -36,7 +36,7 @@ function App() {
         console.log("error fetching free cabinets");
       });
     //getPickupCabinets
-    Axios.get("http://localhost:3003/getPickupCabinets", {
+    Axios.get("http://localhost:3200/getPickupCabinets", {
       params: { locker: lockerValue },
     })
       .then((response) => {
@@ -46,7 +46,7 @@ function App() {
         console.log("error fetching pickup cabinets");
       });
     //getUndeliveredParcels
-    Axios.get("http://localhost:3003/getUndeliveredParcels", {
+    Axios.get("http://localhost:3200/getUndeliveredParcels", {
       params: { locker: lockerValue },
     })
       .then((response) => {
@@ -58,7 +58,7 @@ function App() {
   };
 
   const handlePickupCabinets = (pickupcabinetID,pickupCabinetNumber) => {
-    Axios.put("http://localhost:3003/updateforpickup", {
+    Axios.put("http://localhost:3200/updateforpickup", {
       pickupcabinetID: pickupcabinetID,
     })
       .then((response) => {
@@ -91,7 +91,7 @@ function App() {
     const parcelid = selectedParcel;
     const recipientname = selectedParcelrecipientName;
 
-    Axios.put("http://localhost:3003/updatefordelivery/update", {
+    Axios.put("http://localhost:3200/updatefordelivery/update", {
       freecabinetid: freecabinetid,
       parcelid: parcelid,
       recipientname: recipientname,
@@ -118,7 +118,7 @@ function App() {
       });
 
 
-      Axios.put("http://localhost:3003/updatefordelivery/insert", {
+      Axios.put("http://localhost:3200/updatefordelivery/insert", {
         freecabinetid: freecabinetid,
         parcelid: parcelid,
         recipientname: recipientname,

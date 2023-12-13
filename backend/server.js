@@ -2,6 +2,7 @@ const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const port=3200
 
 const app = express();
 
@@ -13,7 +14,7 @@ const db = mysql.createConnection({
   user: "root",
   host: "localhost",
   password: "root",
-  database: "consumerdbtest",
+  database: "consumerdb",
 });
 
 app.get("/getFreeCabinets", (req, res) => {
@@ -245,8 +246,8 @@ app.put("/updatefordelivery/insert", async (req, res) => {
 // })
 // })
 
-app.listen(3003, () => {
-  console.log("server for driver is running on port3003");
+app.listen(port, () => {
+  console.log(`server for driver is running on port${port}`);
   db.connect(function (err) {
     if (err) throw err;
     console.log("database connected");
